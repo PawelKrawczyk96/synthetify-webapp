@@ -54,7 +54,7 @@ export const colors = {
   },
   red: {
     main: '#EB5757',
-    error: '#F22F2F',
+    error: '#C52727',
     neon: '#FF2079',
     pinkish: '#FE53BB',
     snackbar: '#DE3232'
@@ -67,7 +67,7 @@ export const colors = {
   yellow: {
     neon: '#F5D300'
   },
-  navy: {
+  navy: { // colors with suffix "2" on figma
     background: '#0C0D2C',
     dark: '#0E0E2A',
     component: '#1E1E43',

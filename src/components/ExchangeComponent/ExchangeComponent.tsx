@@ -253,7 +253,7 @@ export const ExchangeComponent: React.FC<IExchangeComponent> = ({
         </Grid>
       </Grid>
 
-      <Grid item container direction='row' justifyContent='center'>
+      <Grid item container direction='row' justifyContent='center' style={{ zIndex: 3 }}>
         <Grid item>
           <IconButton
             className={classes.swapIconSquare}
@@ -270,116 +270,126 @@ export const ExchangeComponent: React.FC<IExchangeComponent> = ({
         </Grid>
       </Grid>
 
-      <Grid item container direction='column' className={classes.tokenComponent}>
-        <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center'>
-          <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center' className={classes.toText}>
-            <Typography className={classes.tokenComponentText}>To (Estimate)</Typography>
-            <MobileTooltip
-              hint={(
-                <>
-                  <img src={Output} alt='' className={classes.outputIcon} />
-                  <Typography className={classes.tooltipTitle}>Estimated output amount</Typography>
-                  <p style={{ marginBlock: 10 }}>Output amount is calculated based on the most up-to-date data from price oracles, so it can change due to the sub-second update intervals of the oracles.</p>
+      <Grid style={{ position: 'relative' }}>
+        {tokenToIndex !== null && (
+          <Grid className={classes.supplyLimit}>
+            <img src={ExclamationMark} alt='' className={classes.supplyIcon} />
+            <Typography className={classes.supplyTitle}>Max supply</Typography>
+            Your amount exceeded current supply of token. Available to trade:
+            <b style={{ wordWrap: 'break-word' }}>{` ${printBN(tokens[tokenToIndex].maxSupply.val.sub(tokens[tokenToIndex].supply.val), tokens[tokenToIndex].supply.scale)} ${tokens[tokenToIndex].symbol}`}</b>
+          </Grid>
+        )}
+        <Grid item container direction='column' className={classes.tokenComponent} style={{ position: 'relative', zIndex: 2 }}>
+          <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center'>
+            <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center' className={classes.toText}>
+              <Typography className={classes.tokenComponentText}>To (Estimate)</Typography>
+              <MobileTooltip
+                hint={(
+                  <>
+                    <img src={Output} alt='' className={classes.outputIcon} />
+                    <Typography className={classes.tooltipTitle}>Estimated output amount</Typography>
+                    <p style={{ marginBlock: 10 }}>Output amount is calculated based on the most up-to-date data from price oracles, so it can change due to the sub-second update intervals of the oracles.</p>
                   Find out more about oracles on <a href={pyth} className={classes.tooltipLink} target='_blank' rel='noopener noreferrer'>Pyth Network website.</a>
-                </>
-              )}
-              anchor={<img src={ExclamationMark} alt='' className={classes.exclamationMark} />}
-              tooltipClasses={{ tooltip: classes.tooltip }}
-              mobilePlacement='top-end'
-              desktopPlacement='top-end'
-              isInteractive
-            />
-          </Grid>
-          <Typography className={classes.tokenMaxText}>
-            {tokenFromIndex !== null && tokenToIndex !== null
-              ? (
-                <>
+                  </>
+                )}
+                anchor={<img src={ExclamationMark} alt='' className={classes.exclamationMark} />}
+                tooltipClasses={{ tooltip: classes.tooltip }}
+                mobilePlacement='top-end'
+                desktopPlacement='top-end'
+                isInteractive
+              />
+            </Grid>
+            <Typography className={classes.tokenMaxText}>
+              {tokenFromIndex !== null && tokenToIndex !== null
+                ? (
+                  <>
                   Balance:{' '}
-                  <AnimatedNumber
-                    value={printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale)}
-                    duration={300}
-                    formatValue={formatNumbers}
-                  />
-                  {+printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale) >= 10000
-                    ? 'K'
-                    : (+printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale) >= 1000000 ? 'M' : '')
-                  }
-                  {` ${tokens[tokenToIndex].symbol}`}
-                </>
-              )
-              : ''}
-          </Typography>
-        </Grid>
-        <Hidden mdUp>
-          <Grid item container wrap='nowrap' justifyContent='space-around' alignItems='center'>
-            <Grid item xs={6}>
-              <SelectToken
-                tokens={tokens.map(({ symbol, balance, supply }) => ({ symbol, balance, decimals: supply.scale }))}
-                current={tokenToIndex !== null ? tokens[tokenToIndex].symbol : null}
-                centered={true}
-                onSelect={(chosen: string) => {
-                  setTokenToIndex(tokens.findIndex(t => t.symbol === chosen) ?? null)
-                  setTimeout(() => updateEstimatedAmount(), 0)
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <MaxButton
-                name='Set to max'
-                className={classNames(classes.button, classes.mdDownButton)}
-                onClick={() => {
-                  if (tokenFromIndex !== null && tokenToIndex !== null) {
-                    setAmountFrom(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
-                    updateEstimatedAmount(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
-                  }
-                }}
-                style={{ whiteSpace: 'nowrap' }}
-              />{' '}
-            </Grid>
+                    <AnimatedNumber
+                      value={printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale)}
+                      duration={300}
+                      formatValue={formatNumbers}
+                    />
+                    {+printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale) >= 10000
+                      ? 'K'
+                      : (+printBN(tokens[tokenToIndex].balance, tokens[tokenToIndex].supply.scale) >= 1000000 ? 'M' : '')
+                    }
+                    {` ${tokens[tokenToIndex].symbol}`}
+                  </>
+                )
+                : ''}
+            </Typography>
           </Grid>
-        </Hidden>
+          <Hidden mdUp>
+            <Grid item container wrap='nowrap' justifyContent='space-around' alignItems='center'>
+              <Grid item xs={6}>
+                <SelectToken
+                  tokens={tokens.map(({ symbol, balance, supply }) => ({ symbol, balance, decimals: supply.scale }))}
+                  current={tokenToIndex !== null ? tokens[tokenToIndex].symbol : null}
+                  centered={true}
+                  onSelect={(chosen: string) => {
+                    setTokenToIndex(tokens.findIndex(t => t.symbol === chosen) ?? null)
+                    setTimeout(() => updateEstimatedAmount(), 0)
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <MaxButton
+                  name='Set to max'
+                  className={classNames(classes.button, classes.mdDownButton)}
+                  onClick={() => {
+                    if (tokenFromIndex !== null && tokenToIndex !== null) {
+                      setAmountFrom(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
+                      updateEstimatedAmount(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
+                    }
+                  }}
+                  style={{ whiteSpace: 'nowrap' }}
+                />{' '}
+              </Grid>
+            </Grid>
+          </Hidden>
 
-        <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center'>
-          <Hidden smDown>
-            <Grid item xs={6}>
-              <SelectToken
-                tokens={tokens.map(({ symbol, balance, supply }) => ({ symbol, balance, decimals: supply.scale }))}
-                current={tokenToIndex !== null ? tokens[tokenToIndex].symbol : null}
-                centered={true}
-                onSelect={(chosen: string) => {
-                  setTokenToIndex(tokens.findIndex(t => t.symbol === chosen) ?? null)
-                  updateEstimatedAmount()
-                }}
-              />
-            </Grid>
-          </Hidden>
-          <Grid item xs={12} style={{ padding: 10 }}>
-            <AmountInput
-              value={amountTo}
-              setValue={value => {
-                if (value.match(/^\d*\.?\d*$/)) {
-                  setAmountTo(value)
-                  updateFromEstimatedAmount(value)
-                }
-              }}
-              placeholder={'0.0'}
-              currency={null}
-            />
-          </Grid>
-          <Hidden smDown>
-            <Grid item xs={6}>
-              <MaxButton
-                name='Set to max'
-                className={classes.button}
-                onClick={() => {
-                  if (tokenFromIndex !== null && tokenToIndex !== null) {
-                    setAmountFrom(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
-                    updateEstimatedAmount(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
+          <Grid item container wrap='nowrap' justifyContent='space-between' alignItems='center'>
+            <Hidden smDown>
+              <Grid item xs={6}>
+                <SelectToken
+                  tokens={tokens.map(({ symbol, balance, supply }) => ({ symbol, balance, decimals: supply.scale }))}
+                  current={tokenToIndex !== null ? tokens[tokenToIndex].symbol : null}
+                  centered={true}
+                  onSelect={(chosen: string) => {
+                    setTokenToIndex(tokens.findIndex(t => t.symbol === chosen) ?? null)
+                    updateEstimatedAmount()
+                  }}
+                />
+              </Grid>
+            </Hidden>
+            <Grid item xs={12} style={{ padding: 10 }}>
+              <AmountInput
+                value={amountTo}
+                setValue={value => {
+                  if (value.match(/^\d*\.?\d*$/)) {
+                    setAmountTo(value)
+                    updateFromEstimatedAmount(value)
                   }
                 }}
-              />{' '}
+                placeholder={'0.0'}
+                currency={null}
+              />
             </Grid>
-          </Hidden>
+            <Hidden smDown>
+              <Grid item xs={6}>
+                <MaxButton
+                  name='Set to max'
+                  className={classes.button}
+                  onClick={() => {
+                    if (tokenFromIndex !== null && tokenToIndex !== null) {
+                      setAmountFrom(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
+                      updateEstimatedAmount(printBN(tokens[tokenFromIndex].balance, tokens[tokenFromIndex].supply.scale))
+                    }
+                  }}
+                />{' '}
+              </Grid>
+            </Hidden>
+          </Grid>
         </Grid>
       </Grid>
       <Grid item container className={classes.numbersField}>

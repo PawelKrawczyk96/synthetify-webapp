@@ -206,6 +206,58 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 700,
     color: colors.navy.veryLightGrey,
     cursor: 'pointer'
+  },
+  supplyLimit: {
+    backgroundColor: colors.red.error,
+    borderRadius: 10,
+    paddingBlock: 10,
+    paddingLeft: 11,
+    paddingRight: 17,
+    position: 'absolute',
+    left: -246,
+    top: 25,
+    zIndex: 1,
+    height: 87,
+    width: 228,
+    fontSize: 13,
+    lineHeight: '16px',
+    color: colors.navy.navBar,
+    transition: 'left 300ms',
+
+    [theme.breakpoints.down('md')]: {
+      borderRadius: 8,
+      paddingInline: 6,
+      paddingTop: 14,
+      paddingBottom: 6,
+      width: 324,
+      height: 61,
+      left: 11,
+      bottom: -73,
+      top: 'unset',
+      transition: 'bottom 300ms'
+    },
+
+    [theme.breakpoints.down('xs')]: {
+      width: 250,
+      height: 76,
+      bottom: -88
+    }
+  },
+  supplyIcon: {
+    width: 16,
+    height: 16,
+    position: 'absolute',
+    right: 18,
+
+    [theme.breakpoints.down('md')]: {
+      right: 6
+    }
+  },
+  supplyTitle: {
+    fontSize: 16,
+    lineHeight: '16px',
+    fontWeight: 700,
+    marginBottom: 10
   }
 }))
 
